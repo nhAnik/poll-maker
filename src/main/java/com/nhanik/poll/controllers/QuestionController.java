@@ -1,8 +1,12 @@
 package com.nhanik.poll.controllers;
 
 import com.nhanik.poll.models.Question;
+import com.nhanik.poll.models.User;
+import com.nhanik.poll.payload.QuestionRequest;
 import com.nhanik.poll.services.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,9 +17,13 @@ public class QuestionController {
     @Autowired
     private QuestionService questionService;
 
+    // Always create question with some choices
     @PostMapping("polls")
-    public Question createPollQuestion(@RequestBody Question question) {
-        return questionService.createPollQuestion(question);
+    public ResponseEntity<?> createPollQuestionWithChoices(
+            @RequestBody QuestionRequest request,
+            @AuthenticationPrincipal User user) {
+        Question question = questionService.createPollQuestionWithChoices(request, user);
+        return ResponseEntity.ok(question);
     }
 
     @GetMapping(path = "polls")
@@ -29,12 +37,17 @@ public class QuestionController {
     }
 
     @PutMapping(path = "polls/{qid}")
-    public void updatePollQuestion(@PathVariable("qid") Long id, @RequestBody Question question) {
-        questionService.updatePollQuestion(id, question);
+    public ResponseEntity<?> updatePollQuestion(
+            @PathVariable("qid") Long id,
+            @RequestBody Question updatedQuestion,
+            @AuthenticationPrincipal User user) {
+        Question question = questionService.updatePollQuestion(id, updatedQuestion, user);
+        return ResponseEntity.ok(question);
     }
 
     @DeleteMapping(path = "polls/{qid}")
-    public void deletePollQuestion(@PathVariable("qid") Long id) {
-        questionService.deletePollQuestion(id);
+    public ResponseEntity<?> deletePollQuestion(@PathVariable("qid") Long id, @AuthenticationPrincipal User user) {
+        questionService.deletePollQuestion(id, user);
+        return ResponseEntity.ok("Successfully deleted!");
     }
 }
