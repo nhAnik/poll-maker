@@ -46,7 +46,7 @@ public class Question {
     @JoinColumn(
             name = "user_id",
             referencedColumnName = "userId",
-//            nullable = false,
+            nullable = false,
             foreignKey = @ForeignKey(name = "FK_USER_ID")
     )
     @OnDelete(action = OnDeleteAction.CASCADE)

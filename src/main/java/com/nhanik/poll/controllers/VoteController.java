@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 public class VoteController {
 
@@ -20,7 +22,7 @@ public class VoteController {
     @PostMapping("polls/{qid}/votes")
     public ResponseEntity<?> castVoteToPoll(
             @PathVariable Long qid,
-            @RequestBody VoteRequest request,
+            @Valid @RequestBody VoteRequest request,
             @AuthenticationPrincipal User user) {
         voteService.castVoteToPoll(qid, request, user);
         return ResponseEntity.ok("Vote cast successful!");

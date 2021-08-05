@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -20,7 +21,7 @@ public class QuestionController {
     // Always create question with some choices
     @PostMapping("polls")
     public ResponseEntity<?> createPollQuestionWithChoices(
-            @RequestBody QuestionRequest request,
+            @Valid @RequestBody QuestionRequest request,
             @AuthenticationPrincipal User user) {
         Question question = questionService.createPollQuestionWithChoices(request, user);
         return ResponseEntity.ok(question);
@@ -39,7 +40,7 @@ public class QuestionController {
     @PutMapping(path = "polls/{qid}")
     public ResponseEntity<?> updatePollQuestion(
             @PathVariable("qid") Long id,
-            @RequestBody Question updatedQuestion,
+            @Valid @RequestBody Question updatedQuestion,
             @AuthenticationPrincipal User user) {
         Question question = questionService.updatePollQuestion(id, updatedQuestion, user);
         return ResponseEntity.ok(question);
