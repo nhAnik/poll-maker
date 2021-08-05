@@ -1,6 +1,5 @@
 package com.nhanik.poll.security;
 
-import com.nhanik.poll.models.User;
 import com.nhanik.poll.services.JwtTokenService;
 import com.nhanik.poll.services.UserService;
 import org.slf4j.Logger;
@@ -19,7 +18,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.security.Principal;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -55,11 +53,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             );
             token.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
             SecurityContextHolder.getContext().setAuthentication(token);
-
-            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            logger.info(user.getEmail());
         }
-
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 

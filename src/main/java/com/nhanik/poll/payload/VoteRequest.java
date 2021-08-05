@@ -10,5 +10,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class VoteRequest {
-    Long choiceId;
+    private Long choiceId;
 }

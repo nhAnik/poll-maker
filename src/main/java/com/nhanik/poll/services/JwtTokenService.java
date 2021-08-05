@@ -43,7 +43,7 @@ public class JwtTokenService {
                     .parseClaimsJws(jwt);
             return true;
         } catch (Exception e) {
-            logger.error(e.toString());
+            logger.error(e.getMessage());
             logger.error("There is something wrong with the JWT!");
         }
         return false;
