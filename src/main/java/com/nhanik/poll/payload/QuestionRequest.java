@@ -6,9 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.*;
 import java.util.List;
 
 @AllArgsConstructor
@@ -19,10 +17,12 @@ public class QuestionRequest {
     @NotBlank
     private String questionText;
 
-    @Min(0)
+    @Min(1)
     @Max(20)
     private int numOfChoices;
 
+    @NotNull
+    @Size(min = 1)
     private List<String> choices;
 }
 
