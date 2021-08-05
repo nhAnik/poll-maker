@@ -54,6 +54,10 @@ public class ChoiceService {
 
     public Choice getPollChoice(Long qid, Long cid) {
         checkValidQuestionId(qid);
+        return getPollChoice(cid);
+    }
+
+    public Choice getPollChoice(Long cid) {
         return choiceRepository
                 .findById(cid)
                 .orElseThrow(() -> new IllegalStateException("Comment not found"));
@@ -75,6 +79,10 @@ public class ChoiceService {
             choice.setChoiceText(updatedChoiceText);
         }
         return choice;
+    }
+
+    public void incrementPollVoteCount(Long cid) {
+        choiceRepository.incrementVoteCountByChoiceId(cid);
     }
 
     public void deletePollChoice(Long qid, Long cid, User user) {
