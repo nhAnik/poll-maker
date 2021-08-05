@@ -1,5 +1,6 @@
 package com.nhanik.poll.services;
 
+import com.nhanik.poll.exception.RegistrationFailureException;
 import com.nhanik.poll.models.User;
 import com.nhanik.poll.payload.AuthenticationRequest;
 import com.nhanik.poll.payload.RegistrationRequest;
@@ -37,12 +38,7 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("User not found"));
-    }
-
-    public User findById(Long uid) {
-        return userRepository.findById(uid)
-                .orElseThrow(() -> new IllegalStateException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User with email " + email + " not found"));
     }
 
     public void createNewUser(RegistrationRequest request) {
@@ -50,7 +46,7 @@ public class UserService implements UserDetailsService {
         String password = request.getPassword();
         userRepository.findByEmail(email)
                 .ifPresent(user -> {
-                    throw new IllegalStateException("User already registered");
+                    throw new RegistrationFailureException(email);
                 });
         User user = new User();
         user.setEmail(email);
@@ -62,22 +58,12 @@ public class UserService implements UserDetailsService {
         logger.info("Trying to authenticate ...");
         String email = request.getEmail();
         String password = request.getPassword();
-        Authentication authentication = null;
-
-        try {
-            authentication =
-                    authenticationManager.authenticate(
-                            new UsernamePasswordAuthenticationToken(email, password)
-                    );
-        } catch (AuthenticationException e) {
-            logger.error(e.getMessage());
-        }
-
-        if (authentication == null) {
-            return "";
-        }
-        // (todo) need to cast
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, password)
+        );
         logger.info("Authentication successful!");
+
+        // (todo) need to cast
 
         UserDetails userDetails = loadUserByUsername(email);
         String jwt = jwtTokenService.generateToken(userDetails);

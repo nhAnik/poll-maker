@@ -1,5 +1,6 @@
 package com.nhanik.poll.services;
 
+import com.nhanik.poll.exception.ResourceNotFoundException;
 import com.nhanik.poll.models.Choice;
 import com.nhanik.poll.models.Question;
 import com.nhanik.poll.models.User;
@@ -31,12 +32,6 @@ public class QuestionService {
         return questionRepository.save(question);
     }
 
-    private void checkMissingChoices(QuestionRequest request) {
-        if (request.getNumOfChoices() <= 0) {
-            throw new IllegalStateException("Choices are missing");
-        }
-    }
-
     private void checkUserPermission(Question question, Long uid) {
         if (question.getUser().getUserId() != uid) {
             logger.error("This user is not permitted to update");
@@ -46,7 +41,6 @@ public class QuestionService {
 
     @Transactional
     public Question createPollQuestionWithChoices(QuestionRequest request, User user) {
-        checkMissingChoices(request);
         Question question = questionRepository.save(new Question(request.getQuestionText(), user));
         request.getChoices()
                 .forEach(choiceText -> {
@@ -62,7 +56,7 @@ public class QuestionService {
 
     public Question getPollQuestion(Long id) {
         return questionRepository.findById(id)
-                .orElseThrow(() -> new IllegalStateException("Poll question with id " + id + " does not exist"));
+                .orElseThrow(() -> new ResourceNotFoundException("Question", id));
     }
 
     @Transactional

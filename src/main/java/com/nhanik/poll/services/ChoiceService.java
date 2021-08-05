@@ -1,5 +1,6 @@
 package com.nhanik.poll.services;
 
+import com.nhanik.poll.exception.ResourceNotFoundException;
 import com.nhanik.poll.models.Choice;
 import com.nhanik.poll.models.Question;
 import com.nhanik.poll.models.User;
@@ -48,7 +49,7 @@ public class ChoiceService {
 
     private void checkValidQuestionId(Long quesId) {
         if (!questionRepository.existsById(quesId)) {
-            throw new IllegalStateException("Question not found");
+            throw new ResourceNotFoundException("Question", quesId);
         }
     }
 
@@ -60,7 +61,7 @@ public class ChoiceService {
     public Choice getPollChoice(Long cid) {
         return choiceRepository
                 .findById(cid)
-                .orElseThrow(() -> new IllegalStateException("Comment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Choice", cid));
     }
 
     @Transactional
@@ -89,13 +90,13 @@ public class ChoiceService {
         Question question = findQuestionById(qid);
         checkUserPermission(question, user.getUserId());
         if (!choiceRepository.existsById(cid)) {
-            throw new IllegalStateException("Comment not found");
+            throw new ResourceNotFoundException("Choice", cid);
         }
         choiceRepository.deleteById(cid);
     }
 
     private Question findQuestionById(Long qid) {
         return questionRepository.findById(qid)
-                .orElseThrow(() -> new IllegalStateException("Question not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Question", qid));
     }
 }
