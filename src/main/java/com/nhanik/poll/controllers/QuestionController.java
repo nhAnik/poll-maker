@@ -4,7 +4,7 @@ import com.nhanik.poll.models.Question;
 import com.nhanik.poll.models.User;
 import com.nhanik.poll.payload.QuestionRequest;
 import com.nhanik.poll.services.QuestionService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -13,10 +13,10 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 public class QuestionController {
 
-    @Autowired
-    private QuestionService questionService;
+    private final QuestionService questionService;
 
     // Always create question with some choices
     @PostMapping("polls")

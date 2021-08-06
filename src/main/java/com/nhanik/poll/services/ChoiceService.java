@@ -6,24 +6,22 @@ import com.nhanik.poll.models.Question;
 import com.nhanik.poll.models.User;
 import com.nhanik.poll.repositories.ChoiceRepository;
 import com.nhanik.poll.repositories.QuestionRepository;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ChoiceService {
 
     private static final Logger logger = LoggerFactory.getLogger(ChoiceService.class);
 
-    @Autowired
-    private ChoiceRepository choiceRepository;
-
-    @Autowired
-    private QuestionRepository questionRepository;
+    private final ChoiceRepository choiceRepository;
+    private final QuestionRepository questionRepository;
 
     private void checkUserPermission(Question question, Long uid) {
         if (question.getUser().getUserId() != uid) {

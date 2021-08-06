@@ -3,17 +3,17 @@ package com.nhanik.poll.controllers;
 import com.nhanik.poll.models.Choice;
 import com.nhanik.poll.models.User;
 import com.nhanik.poll.services.ChoiceService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 public class ChoiceController {
 
-    @Autowired
-    private ChoiceService choiceService;
+    private final ChoiceService choiceService;
 
     @PostMapping(path = "polls/{qid}/choices")
     public Choice createPollChoice(
