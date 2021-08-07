@@ -3,6 +3,7 @@ package com.nhanik.poll.services;
 import com.nhanik.poll.exception.RegistrationFailureException;
 import com.nhanik.poll.models.User;
 import com.nhanik.poll.payload.AuthenticationRequest;
+import com.nhanik.poll.payload.AuthenticationResponse;
 import com.nhanik.poll.payload.RegistrationRequest;
 import com.nhanik.poll.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +50,7 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    public String authenticateUser(AuthenticationRequest request) {
+    public AuthenticationResponse authenticateUser(AuthenticationRequest request) {
         logger.info("Trying to authenticate ...");
         String email = request.getEmail();
         String password = request.getPassword();
@@ -62,6 +63,6 @@ public class UserService implements UserDetailsService {
 
         UserDetails userDetails = loadUserByUsername(email);
         String jwt = jwtTokenService.generateToken(userDetails);
-        return jwt;
+        return new AuthenticationResponse(jwt);
     }
 }

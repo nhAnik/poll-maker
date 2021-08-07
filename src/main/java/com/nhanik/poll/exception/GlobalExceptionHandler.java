@@ -11,8 +11,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -30,20 +28,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        List<String> errors = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                .collect(Collectors.toList());
         ValidationExceptionResponse response = new ValidationExceptionResponse(
-                status.value(), "Validation failure", LocalDateTime.now(), errors
+                LocalDateTime.now(), status.value(), "Validation failure"
         );
+        ex.getBindingResult()
+                .getFieldErrors()
+                .forEach(error -> response.addValidationError(error.getField(), error.getDefaultMessage()));
         return new ResponseEntity<>(response, headers, status);
     }
 
     private ResponseEntity<ExceptionResponse> sendErrorResponse(Exception ex, HttpStatus httpStatus) {
         ExceptionResponse response = new ExceptionResponse(
-                httpStatus.value(), ex.getMessage(), LocalDateTime.now()
+                LocalDateTime.now(), httpStatus.value(), ex.getMessage()
         );
         return new ResponseEntity<>(response, httpStatus);
     }

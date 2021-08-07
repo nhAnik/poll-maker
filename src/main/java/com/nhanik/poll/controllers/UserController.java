@@ -26,7 +26,7 @@ public class UserController {
 
     @PostMapping("login")
     public ResponseEntity<?> authenticate(@Valid @RequestBody AuthenticationRequest request) {
-        String jwt = userService.authenticateUser(request);
-        return ResponseEntity.ok(new AuthenticationResponse(jwt));
+        AuthenticationResponse response = userService.authenticateUser(request);
+        return ResponseEntity.ok(response);
     }
 }

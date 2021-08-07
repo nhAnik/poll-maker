@@ -15,8 +15,8 @@ import static com.fasterxml.jackson.annotation.JsonFormat.*;
 @Getter
 @Setter
 public class ExceptionResponse {
+    @JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
+    private LocalDateTime timestamp;
     private int status;
     private String message;
-    @JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
-    private LocalDateTime dateTime;
 }
