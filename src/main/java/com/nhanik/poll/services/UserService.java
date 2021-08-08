@@ -45,6 +45,8 @@ public class UserService implements UserDetailsService {
                     throw new RegistrationFailureException(email);
                 });
         User user = new User();
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);

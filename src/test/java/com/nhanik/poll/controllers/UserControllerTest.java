@@ -40,7 +40,7 @@ class UserControllerTest {
     @DisplayName("Successful registration with valid inputs")
     public void whenRegisterWithValidInput_thenReturns200AndResponse() throws Exception {
         RegistrationRequest request = new RegistrationRequest(
-                "abc@test.com", "password"
+                "John", "Doe", "abc@test.com", "password"
         );
         final MockHttpServletRequestBuilder registerUserRequest = post("/register")
                 .contentType(APPLICATION_JSON)
@@ -57,7 +57,7 @@ class UserControllerTest {
     @DisplayName("Failed registration with blank email and invalid password")
     public void whenRegisterWithInvalidInput1_thenReturns400AndErrorResponse() throws Exception {
         RegistrationRequest request = new RegistrationRequest(
-                "  ", "pass"
+                "John", "Doe","  ", "pass"
         );
         final MockHttpServletRequestBuilder registerUserRequest = post("/register")
                 .contentType(APPLICATION_JSON)
@@ -79,9 +79,14 @@ class UserControllerTest {
     @Test
     @DisplayName("Failed registration with null input")
     public void whenRegisterWithInvalidInput2_thenReturns400AndErrorResponse() throws Exception {
+        RegistrationRequest request = RegistrationRequest.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("abc@test.com")
+                .build();
         final MockHttpServletRequestBuilder registerUserRequest = post("/register")
                 .contentType(APPLICATION_JSON)
-                .content("{\"email\": \"abc@test.com\"}");
+                .content(objectMapper.writeValueAsString(request));
         mockMvc.perform(registerUserRequest)
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(APPLICATION_JSON))

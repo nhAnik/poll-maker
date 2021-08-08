@@ -47,7 +47,8 @@ class QuestionControllerTest {
     @WithMockUser
     @DisplayName("Get response with valid questionId")
     public void whenValidQuesId_thenReturn200AndResponse() throws Exception {
-        User user = new User(1L, "abc@test.com", "password");
+        User user = new User(
+                1L, "John", "Doe", "abc@test.com", "password");
         List<Choice> choices = new ArrayList<>();
         Question question = new Question(1L, "Favourite JS framework?", choices, user);
         Choice choice1 = new Choice(1L, "React", 0, question);

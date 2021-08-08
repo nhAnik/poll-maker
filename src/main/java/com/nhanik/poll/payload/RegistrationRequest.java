@@ -1,9 +1,6 @@
 package com.nhanik.poll.payload;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -12,7 +9,12 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class RegistrationRequest {
+    @NotBlank
+    private String firstName;
+    @NotBlank
+    private String lastName;
     @NotBlank
     private String email;
     @NotBlank
