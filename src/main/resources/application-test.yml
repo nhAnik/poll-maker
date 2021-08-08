@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  application:
+    name: integration-test
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+      show-sql: false
