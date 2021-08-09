@@ -5,7 +5,7 @@ import com.nhanik.poll.models.User;
 import com.nhanik.poll.payload.AuthenticationRequest;
 import com.nhanik.poll.payload.RegistrationRequest;
 import com.nhanik.poll.repositories.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +21,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,7 +48,7 @@ class UserControllerIntegrationTest {
     private UserRepository userRepository;
 
     @Container
-    private static PostgreSQLContainer postgresqlContainer =
+    private static final PostgreSQLContainer postgresqlContainer =
             new PostgreSQLContainer("postgres:alpine")
                     .withDatabaseName("poll_db")
                     .withUsername("postgres")
@@ -64,9 +66,9 @@ class UserControllerIntegrationTest {
         }
     }
 
-    @BeforeEach
-    public void init() {
-
+    @AfterEach
+    public void tearDown() {
+        userRepository.deleteAll();
     }
 
     @Test
@@ -118,9 +120,9 @@ class UserControllerIntegrationTest {
                 getServletRequest("/login", objectMapper.writeValueAsString(authenticationRequest));
         mockMvc.perform(loginUserRequest)
                 .andExpect(status().isOk());
-        User user = userRepository.findByEmail(authenticationRequest.getEmail()).get();
-        assertNotNull(user);
-        assertEquals(authenticationRequest.getEmail(), user.getUsername());
+        Optional<User> user = userRepository.findByEmail(authenticationRequest.getEmail());
+        assertTrue(user.isPresent());
+        assertEquals(authenticationRequest.getEmail(), user.get().getUsername());
     }
 
     @Test
@@ -133,7 +135,8 @@ class UserControllerIntegrationTest {
                 "/login", objectMapper.writeValueAsString(request)
         );
         mockMvc.perform(loginUserRequest)
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message", is("Bad credentials")));
     }
 
     private MockHttpServletRequestBuilder getServletRequest(String url, String content) {
