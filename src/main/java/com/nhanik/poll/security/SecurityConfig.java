@@ -21,6 +21,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserService userService;
     private final JwtTokenService jwtTokenService;
+    private final JwtAuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
     public JwtRequestFilter getJwtRequestFilter() {
@@ -45,6 +46,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .csrf()
                 .disable()
+                .exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .and()
                 .authorizeRequests()
                 .antMatchers("/register", "/login")
                 .permitAll()
