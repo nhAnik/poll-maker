@@ -2,10 +2,7 @@ package com.nhanik.poll.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -19,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class Question {
 
     @Id
@@ -53,10 +51,17 @@ public class Question {
     @JsonIgnore
     private User user;
 
+    @Transient
+    private String ownerName;
+
     public Question(String questionText, User user) {
         this.questionText = questionText;
         this.user = user;
         this.choices = new ArrayList<>();
+    }
+
+    public String getOwnerName() {
+        return user.getFirstName() + " " + user.getLastName();
     }
 
     public void addChoice(Choice choice) {
