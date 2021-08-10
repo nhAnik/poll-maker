@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhanik.poll.models.Choice;
 import com.nhanik.poll.models.Question;
 import com.nhanik.poll.models.User;
+import com.nhanik.poll.security.JwtAuthenticationEntryPoint;
 import com.nhanik.poll.services.JwtTokenService;
 import com.nhanik.poll.services.QuestionService;
 import com.nhanik.poll.services.UserService;
@@ -42,6 +43,9 @@ class QuestionControllerTest {
 
     @MockBean
     private JwtTokenService jwtTokenService;
+
+    @MockBean
+    private JwtAuthenticationEntryPoint authenticationEntryPoint;
 
     @Test
     @WithMockUser

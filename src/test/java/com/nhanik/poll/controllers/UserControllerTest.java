@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhanik.poll.payload.AuthenticationRequest;
 import com.nhanik.poll.payload.AuthenticationResponse;
 import com.nhanik.poll.payload.RegistrationRequest;
+import com.nhanik.poll.security.JwtAuthenticationEntryPoint;
 import com.nhanik.poll.services.JwtTokenService;
 import com.nhanik.poll.services.UserService;
 import org.junit.jupiter.api.DisplayName;
@@ -35,6 +36,9 @@ class UserControllerTest {
 
     @MockBean
     private JwtTokenService jwtTokenService;
+
+    @MockBean
+    private JwtAuthenticationEntryPoint authenticationEntryPoint;
 
     @Test
     @DisplayName("Successful registration with valid inputs")
