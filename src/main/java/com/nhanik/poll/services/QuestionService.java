@@ -1,15 +1,20 @@
 package com.nhanik.poll.services;
 
 import com.nhanik.poll.exception.ChoiceRemoveFailureException;
+import com.nhanik.poll.exception.MultipleVoteException;
 import com.nhanik.poll.exception.ResourceNotFoundException;
 import com.nhanik.poll.models.Choice;
 import com.nhanik.poll.models.Question;
 import com.nhanik.poll.models.User;
+import com.nhanik.poll.models.Vote;
 import com.nhanik.poll.payload.QuestionRequest;
+import com.nhanik.poll.payload.VoteRequest;
 import com.nhanik.poll.repositories.QuestionRepository;
+import com.nhanik.poll.repositories.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +27,7 @@ public class QuestionService {
     private static final Logger logger = LoggerFactory.getLogger(QuestionService.class);
 
     private final QuestionRepository questionRepository;
+    private final VoteRepository voteRepository;
     private final ChoiceService choiceService;
 
     private void checkUserPermission(Question question, Long uid) {
@@ -49,6 +55,21 @@ public class QuestionService {
         choice = choiceService.createPollChoice(choice);
         question.addChoice(choice);
         return question;
+    }
+
+    @Transactional
+    public void castVoteToPoll(Long qid, VoteRequest request, User user) {
+        Long choiceId = request.getChoiceId();
+        Question question = getPollQuestion(qid);
+        Choice choice = choiceService.getPollChoice(choiceId);
+        voteRepository
+                .findByQuestionAndUser(question, user)
+                .ifPresent(vote -> {
+                    throw new MultipleVoteException();
+                });
+
+        voteRepository.save(new Vote(question, choice, user));
+        choiceService.incrementPollVoteCount(choiceId);
     }
 
     public List<Question> getAllPollQuestions() {

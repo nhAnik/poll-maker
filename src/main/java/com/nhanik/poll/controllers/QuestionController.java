@@ -4,6 +4,7 @@ import com.nhanik.poll.models.Choice;
 import com.nhanik.poll.models.Question;
 import com.nhanik.poll.models.User;
 import com.nhanik.poll.payload.QuestionRequest;
+import com.nhanik.poll.payload.VoteRequest;
 import com.nhanik.poll.services.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +35,15 @@ public class QuestionController {
             @RequestBody Choice choice,
             @AuthenticationPrincipal User user) {
         return questionService.addChoiceForQuestion(id, choice, user);
+    }
+
+    @PostMapping(path = "polls/{qid}/votes")
+    public ResponseEntity<?> castVoteToPoll(
+            @PathVariable Long qid,
+            @Valid @RequestBody VoteRequest request,
+            @AuthenticationPrincipal User user) {
+        questionService.castVoteToPoll(qid, request, user);
+        return ResponseEntity.ok("Vote cast successful!");
     }
 
     @GetMapping(path = "polls")

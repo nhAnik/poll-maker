@@ -58,4 +58,10 @@ public class Vote {
             foreignKey = @ForeignKey(name = "FK_USER_ID")
     )
     private User user;
+
+    public Vote(Question question, Choice choice, User user) {
+        this.question = question;
+        this.choice = choice;
+        this.user = user;
+    }
 }

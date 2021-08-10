@@ -23,6 +23,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({
             RegistrationFailureException.class,
             ChoiceRemoveFailureException.class,
+            MultipleVoteException.class,
             ConstraintViolationException.class,})
     public ResponseEntity<ExceptionResponse> handleBadRequest(Exception ex) {
         return sendErrorResponse(ex, HttpStatus.BAD_REQUEST);
