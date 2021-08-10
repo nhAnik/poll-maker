@@ -20,7 +20,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return sendErrorResponse(ex, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler({RegistrationFailureException.class, ConstraintViolationException.class})
+    @ExceptionHandler({
+            RegistrationFailureException.class,
+            ChoiceRemoveFailureException.class,
+            ConstraintViolationException.class,})
     public ResponseEntity<ExceptionResponse> handleBadRequest(Exception ex) {
         return sendErrorResponse(ex, HttpStatus.BAD_REQUEST);
     }

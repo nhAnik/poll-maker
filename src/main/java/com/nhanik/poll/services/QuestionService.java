@@ -1,5 +1,6 @@
 package com.nhanik.poll.services;
 
+import com.nhanik.poll.exception.ChoiceRemoveFailureException;
 import com.nhanik.poll.exception.ResourceNotFoundException;
 import com.nhanik.poll.models.Choice;
 import com.nhanik.poll.models.Question;
@@ -41,6 +42,15 @@ public class QuestionService {
         return question;
     }
 
+    public Question addChoiceForQuestion(Long qid, Choice choice, User user) {
+        Question question = getPollQuestion(qid);
+        checkUserPermission(question, user.getUserId());
+        choice.setQuestion(question);
+        choice = choiceService.createPollChoice(choice);
+        question.addChoice(choice);
+        return question;
+    }
+
     public List<Question> getAllPollQuestions() {
         return questionRepository.findAll();
     }
@@ -53,12 +63,8 @@ public class QuestionService {
     @Transactional
     public Question updatePollQuestion(Long qid, Question updateQuestion, User user) {
         Question question = getPollQuestion(qid);
-
-        // Check if the user is same one who crated the question
         checkUserPermission(question, user.getUserId());
-
-        String updatedQuesText = updateQuestion.getQuestionText();
-        question.setQuestionText(updatedQuesText);
+        question.setQuestionText(updateQuestion.getQuestionText());
         return question;
     }
 
@@ -66,5 +72,26 @@ public class QuestionService {
         Question question = getPollQuestion(qid);
         checkUserPermission(question, user.getUserId());
         questionRepository.deleteById(qid);
+    }
+
+    @Transactional
+    public Choice updateChoiceForQuestion(Long qid, Long cid, Choice updatedChoice, User user) {
+        Question question = getPollQuestion(qid);
+        checkUserPermission(question, user.getUserId());
+        return choiceService.updatePollChoice(cid, updatedChoice);
+    }
+
+    public List<Choice> getPollAllChoices(Long qid) {
+        Question question = getPollQuestion(qid);
+        return question.getChoices();
+    }
+
+    public void deletePollChoiceForQuestion(Long qid, Long cid, User user) {
+        Question question = getPollQuestion(qid);
+        checkUserPermission(question, user.getUserId());
+        if (question.getChoices().size() <= 2) {
+            throw new ChoiceRemoveFailureException(qid);
+        }
+        choiceService.deletePollChoice(cid);
     }
 }

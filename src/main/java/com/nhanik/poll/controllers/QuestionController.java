@@ -1,5 +1,6 @@
 package com.nhanik.poll.controllers;
 
+import com.nhanik.poll.models.Choice;
 import com.nhanik.poll.models.Question;
 import com.nhanik.poll.models.User;
 import com.nhanik.poll.payload.QuestionRequest;
@@ -27,6 +28,14 @@ public class QuestionController {
         return ResponseEntity.ok(question);
     }
 
+    @PostMapping(path = "polls/{qid}/choices")
+    public Question addChoiceForQuestion(
+            @PathVariable("qid") Long id,
+            @RequestBody Choice choice,
+            @AuthenticationPrincipal User user) {
+        return questionService.addChoiceForQuestion(id, choice, user);
+    }
+
     @GetMapping(path = "polls")
     public List<Question> getAllPollQuestions() {
         return questionService.getAllPollQuestions();
@@ -49,6 +58,6 @@ public class QuestionController {
     @DeleteMapping(path = "polls/{qid}")
     public ResponseEntity<?> deletePollQuestion(@PathVariable("qid") Long id, @AuthenticationPrincipal User user) {
         questionService.deletePollQuestion(id, user);
-        return ResponseEntity.ok("Successfully deleted!");
+        return ResponseEntity.ok("Question deleted");
     }
 }
