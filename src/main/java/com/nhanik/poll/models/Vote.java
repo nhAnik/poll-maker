@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -39,6 +41,7 @@ public class Vote {
             nullable = false,
             foreignKey = @ForeignKey(name = "FK_QUESTION_ID")
     )
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Question question;
 
     @ManyToOne
@@ -48,6 +51,7 @@ public class Vote {
             nullable = false,
             foreignKey = @ForeignKey(name = "FK_CHOICE_ID")
     )
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Choice choice;
 
     @ManyToOne
