@@ -2,6 +2,7 @@ package com.nhanik.poll.services;
 
 import com.nhanik.poll.exception.ResourceNotFoundException;
 import com.nhanik.poll.models.Choice;
+import com.nhanik.poll.payload.UpdatedTextRequest;
 import com.nhanik.poll.repositories.ChoiceRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -27,10 +28,9 @@ public class ChoiceService {
     }
 
     // called from a transactional
-    public Choice updatePollChoice(Long cid, Choice updatedChoice) {
+    public Choice updatePollChoice(Long cid, UpdatedTextRequest request) {
         Choice choice = getPollChoice(cid);
-        choice.setChoiceText(updatedChoice.getChoiceText());
-        choice.setVoteCount(updatedChoice.getVoteCount());
+        choice.setChoiceText(request.getUpdatedText());
         return choice;
     }
 

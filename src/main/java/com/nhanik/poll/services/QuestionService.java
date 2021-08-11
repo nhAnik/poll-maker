@@ -8,6 +8,7 @@ import com.nhanik.poll.models.Question;
 import com.nhanik.poll.models.User;
 import com.nhanik.poll.models.Vote;
 import com.nhanik.poll.payload.QuestionRequest;
+import com.nhanik.poll.payload.UpdatedTextRequest;
 import com.nhanik.poll.payload.VoteRequest;
 import com.nhanik.poll.repositories.QuestionRepository;
 import com.nhanik.poll.repositories.VoteRepository;
@@ -48,12 +49,10 @@ public class QuestionService {
         return question;
     }
 
-    public Question addChoiceForQuestion(Long qid, Choice choice, User user) {
+    public Question addChoiceForQuestion(Long qid, UpdatedTextRequest request, User user) {
         Question question = getPollQuestion(qid);
         checkUserPermission(question, user.getUserId());
-        choice.setQuestion(question);
-        choice = choiceService.createPollChoice(choice);
-        question.addChoice(choice);
+        choiceService.createPollChoice(new Choice(request.getUpdatedText(), question));
         return question;
     }
 
@@ -82,10 +81,10 @@ public class QuestionService {
     }
 
     @Transactional
-    public Question updatePollQuestion(Long qid, Question updateQuestion, User user) {
+    public Question updatePollQuestion(Long qid, UpdatedTextRequest request, User user) {
         Question question = getPollQuestion(qid);
         checkUserPermission(question, user.getUserId());
-        question.setQuestionText(updateQuestion.getQuestionText());
+        question.setQuestionText(request.getUpdatedText());
         return question;
     }
 
@@ -96,10 +95,10 @@ public class QuestionService {
     }
 
     @Transactional
-    public Choice updateChoiceForQuestion(Long qid, Long cid, Choice updatedChoice, User user) {
+    public Choice updateChoiceForQuestion(Long qid, Long cid, UpdatedTextRequest request, User user) {
         Question question = getPollQuestion(qid);
         checkUserPermission(question, user.getUserId());
-        return choiceService.updatePollChoice(cid, updatedChoice);
+        return choiceService.updatePollChoice(cid, request);
     }
 
     public List<Choice> getPollAllChoices(Long qid) {

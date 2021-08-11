@@ -2,6 +2,7 @@ package com.nhanik.poll.controllers;
 
 import com.nhanik.poll.models.Choice;
 import com.nhanik.poll.models.User;
+import com.nhanik.poll.payload.UpdatedTextRequest;
 import com.nhanik.poll.services.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +19,9 @@ public class ChoiceController {
     public ResponseEntity<?> updatePollChoice(
             @PathVariable("qid") Long qid,
             @PathVariable("cid") Long cid,
-            @RequestBody Choice choice,
+            @RequestBody UpdatedTextRequest request,
             @AuthenticationPrincipal User user) {
-        Choice updatedChoice = questionService.updateChoiceForQuestion(qid, cid, choice, user);
+        Choice updatedChoice = questionService.updateChoiceForQuestion(qid, cid, request, user);
         return ResponseEntity.ok(updatedChoice);
     }
 

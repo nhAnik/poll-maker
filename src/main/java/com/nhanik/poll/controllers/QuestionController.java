@@ -1,9 +1,9 @@
 package com.nhanik.poll.controllers;
 
-import com.nhanik.poll.models.Choice;
 import com.nhanik.poll.models.Question;
 import com.nhanik.poll.models.User;
 import com.nhanik.poll.payload.QuestionRequest;
+import com.nhanik.poll.payload.UpdatedTextRequest;
 import com.nhanik.poll.payload.VoteRequest;
 import com.nhanik.poll.services.QuestionService;
 import lombok.RequiredArgsConstructor;
@@ -30,11 +30,12 @@ public class QuestionController {
     }
 
     @PostMapping(path = "polls/{qid}/choices")
-    public Question addChoiceForQuestion(
+    public ResponseEntity<?> addChoiceForQuestion(
             @PathVariable("qid") Long id,
-            @RequestBody Choice choice,
+            @RequestBody UpdatedTextRequest request,
             @AuthenticationPrincipal User user) {
-        return questionService.addChoiceForQuestion(id, choice, user);
+        Question question = questionService.addChoiceForQuestion(id, request, user);
+        return ResponseEntity.ok(question);
     }
 
     @PostMapping(path = "polls/{qid}/votes")
@@ -47,21 +48,21 @@ public class QuestionController {
     }
 
     @GetMapping(path = "polls")
-    public List<Question> getAllPollQuestions() {
-        return questionService.getAllPollQuestions();
+    public ResponseEntity<?> getAllPollQuestions() {
+        return ResponseEntity.ok(questionService.getAllPollQuestions());
     }
 
     @GetMapping(path = "polls/{qid}")
-    public Question getPollQuestion(@PathVariable("qid") Long id) {
-        return questionService.getPollQuestion(id);
+    public ResponseEntity<?>  getPollQuestion(@PathVariable("qid") Long id) {
+        return ResponseEntity.ok(questionService.getPollQuestion(id));
     }
 
     @PutMapping(path = "polls/{qid}")
     public ResponseEntity<?> updatePollQuestion(
             @PathVariable("qid") Long id,
-            @Valid @RequestBody Question updatedQuestion,
+            @Valid @RequestBody UpdatedTextRequest request,
             @AuthenticationPrincipal User user) {
-        Question question = questionService.updatePollQuestion(id, updatedQuestion, user);
+        Question question = questionService.updatePollQuestion(id, request, user);
         return ResponseEntity.ok(question);
     }
 

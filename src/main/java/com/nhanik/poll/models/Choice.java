@@ -9,8 +9,6 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "choice_table")
@@ -31,11 +29,9 @@ public class Choice {
     )
     private Long choiceId;
 
-    @NotBlank
     @Column(nullable = false)
     private String choiceText;
 
-    @Min(0)
     private Integer voteCount = 0;
 
     @ManyToOne(
