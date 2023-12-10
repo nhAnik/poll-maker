@@ -1,21 +1,12 @@
 package com.nhanik.poll.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import javax.persistence.*;
-
 @Entity
 @Table(name = "choice_table")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
 public class Choice {
     @Id
     @SequenceGenerator(
@@ -49,6 +40,47 @@ public class Choice {
 
     public Choice(String choiceText, Question question) {
         this.choiceText = choiceText;
+        this.question = question;
+    }
+
+    public Choice() {}
+
+    public Choice(Long choiceId, String choiceText, Integer voteCount, Question question) {
+        this.choiceId = choiceId;
+        this.choiceText = choiceText;
+        this.voteCount = voteCount;
+        this.question = question;
+    }
+
+    public Long getChoiceId() {
+        return choiceId;
+    }
+
+    public void setChoiceId(Long choiceId) {
+        this.choiceId = choiceId;
+    }
+
+    public String getChoiceText() {
+        return choiceText;
+    }
+
+    public void setChoiceText(String choiceText) {
+        this.choiceText = choiceText;
+    }
+
+    public Integer getVoteCount() {
+        return voteCount;
+    }
+
+    public void setVoteCount(Integer voteCount) {
+        this.voteCount = voteCount;
+    }
+
+    public Question getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(Question question) {
         this.question = question;
     }
 }

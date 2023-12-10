@@ -6,19 +6,19 @@ import com.nhanik.poll.payload.QuestionRequest;
 import com.nhanik.poll.payload.UpdatedTextRequest;
 import com.nhanik.poll.payload.VoteRequest;
 import com.nhanik.poll.services.QuestionService;
-import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.util.List;
-
 @RestController
-@RequiredArgsConstructor
 public class QuestionController {
 
     private final QuestionService questionService;
+
+    public QuestionController(QuestionService questionService) {
+        this.questionService = questionService;
+    }
 
     // Always create question with some choices
     @PostMapping("polls")

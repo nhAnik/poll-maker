@@ -1,13 +1,8 @@
 package com.nhanik.poll.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
-import javax.persistence.*;
 
 @Entity
 @Table(
@@ -17,10 +12,6 @@ import javax.persistence.*;
                 columnNames = {"question_id", "user_id"}
         )
 )
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
 public class Vote {
     @Id
     @SequenceGenerator(
@@ -63,9 +54,43 @@ public class Vote {
     )
     private User user;
 
+    public Vote() {}
+
     public Vote(Question question, Choice choice, User user) {
         this.question = question;
         this.choice = choice;
+        this.user = user;
+    }
+
+    public Long getVoteId() {
+        return voteId;
+    }
+
+    public void setVoteId(Long voteId) {
+        this.voteId = voteId;
+    }
+
+    public Question getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
+    }
+
+    public Choice getChoice() {
+        return choice;
+    }
+
+    public void setChoice(Choice choice) {
+        this.choice = choice;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
         this.user = user;
     }
 }

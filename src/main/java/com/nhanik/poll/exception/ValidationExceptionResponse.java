@@ -1,34 +1,20 @@
 package com.nhanik.poll.exception;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
-@NoArgsConstructor
-@Getter
-@Setter
-public class ValidationExceptionResponse extends ExceptionResponse {
-    List<ValidationError> validationErrors;
-
-    public ValidationExceptionResponse(
-            LocalDateTime dateTime, int status, String message) {
-        super(dateTime, status, message);
-        validationErrors = new ArrayList<>();
-    }
+public record ValidationExceptionResponse (
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
+        LocalDateTime timestamp,
+        int status,
+        String message,
+        List<ValidationError> validationErrors
+) {
+    record ValidationError(String field, String message) {}
 
     public void addValidationError(String field, String message) {
-        validationErrors.add(new ValidationError(field, message));
-    }
-
-    @Getter
-    @AllArgsConstructor
-    static class ValidationError {
-        private String field;
-        private String message;
+        this.validationErrors.add(new ValidationError(field, message));
     }
 }

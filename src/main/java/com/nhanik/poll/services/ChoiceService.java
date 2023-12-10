@@ -4,18 +4,20 @@ import com.nhanik.poll.exception.ResourceNotFoundException;
 import com.nhanik.poll.models.Choice;
 import com.nhanik.poll.payload.UpdatedTextRequest;
 import com.nhanik.poll.repositories.ChoiceRepository;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class ChoiceService {
 
     private static final Logger logger = LoggerFactory.getLogger(ChoiceService.class);
 
     private final ChoiceRepository choiceRepository;
+
+    public ChoiceService(ChoiceRepository choiceRepository) {
+        this.choiceRepository = choiceRepository;
+    }
 
     public Choice getPollChoice(Long cid) {
         return choiceRepository
@@ -30,7 +32,7 @@ public class ChoiceService {
     // called from a transactional
     public Choice updatePollChoice(Long cid, UpdatedTextRequest request) {
         Choice choice = getPollChoice(cid);
-        choice.setChoiceText(request.getUpdatedText());
+        choice.setChoiceText(request.updatedText());
         return choice;
     }
 

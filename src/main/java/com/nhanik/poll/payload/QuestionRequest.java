@@ -1,29 +1,12 @@
 package com.nhanik.poll.payload;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.*;
 
-import javax.validation.constraints.*;
 import java.util.List;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-public class QuestionRequest {
-    @NotBlank
-    private String questionText;
-
-    @Min(1)
-    @Max(20)
-    private int numOfChoices;
-
+public record QuestionRequest (
+    @NotBlank String questionText,
+    @Min(1) @Max(20) int numOfChoices,
     @NotNull
-    @Size(min = 1)
-    private List<String> choices;
-}
-
-
-
+    @Size(min = 1) List<String> choices
+) {}

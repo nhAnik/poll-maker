@@ -12,17 +12,14 @@ import com.nhanik.poll.payload.UpdatedTextRequest;
 import com.nhanik.poll.payload.VoteRequest;
 import com.nhanik.poll.repositories.QuestionRepository;
 import com.nhanik.poll.repositories.VoteRepository;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class QuestionService {
 
     private static final Logger logger = LoggerFactory.getLogger(QuestionService.class);
@@ -30,6 +27,12 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final VoteRepository voteRepository;
     private final ChoiceService choiceService;
+
+    public QuestionService(QuestionRepository questionRepository, VoteRepository voteRepository, ChoiceService choiceService) {
+        this.questionRepository = questionRepository;
+        this.voteRepository = voteRepository;
+        this.choiceService = choiceService;
+    }
 
     private void checkUserPermission(Question question, Long uid) {
         if (question.getUser().getUserId() != uid) {
@@ -40,8 +43,8 @@ public class QuestionService {
 
     @Transactional
     public Question createPollQuestionWithChoices(QuestionRequest request, User user) {
-        Question question = questionRepository.save(new Question(request.getQuestionText(), user));
-        request.getChoices()
+        Question question = questionRepository.save(new Question(request.questionText(), user));
+        request.choices()
                 .forEach(choiceText -> {
                     Choice choice = choiceService.createPollChoice(new Choice(choiceText, question));
                     question.addChoice(choice);
@@ -52,13 +55,13 @@ public class QuestionService {
     public Question addChoiceForQuestion(Long qid, UpdatedTextRequest request, User user) {
         Question question = getPollQuestion(qid);
         checkUserPermission(question, user.getUserId());
-        choiceService.createPollChoice(new Choice(request.getUpdatedText(), question));
+        choiceService.createPollChoice(new Choice(request.updatedText(), question));
         return question;
     }
 
     @Transactional
     public void castVoteToPoll(Long qid, VoteRequest request, User user) {
-        Long choiceId = request.getChoiceId();
+        Long choiceId = request.choiceId();
         Question question = getPollQuestion(qid);
         Choice choice = choiceService.getPollChoice(choiceId);
         voteRepository
@@ -84,7 +87,7 @@ public class QuestionService {
     public Question updatePollQuestion(Long qid, UpdatedTextRequest request, User user) {
         Question question = getPollQuestion(qid);
         checkUserPermission(question, user.getUserId());
-        question.setQuestionText(request.getUpdatedText());
+        question.setQuestionText(request.updatedText());
         return question;
     }
 

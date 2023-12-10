@@ -54,12 +54,8 @@ class QuestionControllerTest {
         User user = new User(
                 1L, "John", "Doe", "abc@test.com", "password");
         List<Choice> choices = new ArrayList<>();
-        Question question = Question.builder()
-                .questionId(1L)
-                .questionText("Favourite JS framework?")
-                .choices(choices)
-                .user(user)
-                .build();
+
+        Question question = new Question(1L, "Favourite JS framework?", choices, user);
         Choice choice1 = new Choice(1L, "React", 0, question);
         Choice choice2 = new Choice(2L, "Vue", 0, question);
         question.addChoice(choice1);

@@ -5,6 +5,7 @@ import com.nhanik.poll.payload.AuthenticationRequest;
 import com.nhanik.poll.payload.AuthenticationResponse;
 import com.nhanik.poll.payload.RegistrationRequest;
 import com.nhanik.poll.security.JwtAuthenticationEntryPoint;
+import com.nhanik.poll.services.AuthService;
 import com.nhanik.poll.services.JwtTokenService;
 import com.nhanik.poll.services.UserService;
 import org.junit.jupiter.api.DisplayName;
@@ -14,8 +15,10 @@ import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.testcontainers.shaded.com.trilead.ssh2.auth.AuthenticationManager;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -23,13 +26,16 @@ import static org.springframework.http.MediaType.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(UserController.class)
-class UserControllerTest {
+@WebMvcTest(AuthController.class)
+class AuthControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private AuthService authService;
 
     @MockBean
     private UserService userService;
@@ -39,6 +45,12 @@ class UserControllerTest {
 
     @MockBean
     private JwtAuthenticationEntryPoint authenticationEntryPoint;
+
+    @MockBean
+    private AuthenticationManager authenticationManager;
+
+    @MockBean
+    private SecurityFilterChain securityFilterChain;
 
     @Test
     @DisplayName("Successful registration with valid inputs")
@@ -54,7 +66,7 @@ class UserControllerTest {
                 .andExpect(content().string("User created"));
         ArgumentCaptor<RegistrationRequest> requestCaptor =
                 ArgumentCaptor.forClass(RegistrationRequest.class);
-        verify(userService, times(1)).createNewUser(requestCaptor.capture());
+        verify(authService, times(1)).createNewUser(requestCaptor.capture());
     }
 
     @Test
@@ -77,17 +89,14 @@ class UserControllerTest {
                         containsInAnyOrder("must not be blank", "size must be between 8 and 15")));
         ArgumentCaptor<RegistrationRequest> requestCaptor =
                 ArgumentCaptor.forClass(RegistrationRequest.class);
-        verify(userService, never()).createNewUser(requestCaptor.capture());
+        verify(authService, never()).createNewUser(requestCaptor.capture());
     }
 
     @Test
     @DisplayName("Failed registration with null input")
     public void whenRegisterWithInvalidInput2_thenReturns400AndErrorResponse() throws Exception {
-        RegistrationRequest request = RegistrationRequest.builder()
-                .firstName("John")
-                .lastName("Doe")
-                .email("abc@test.com")
-                .build();
+        RegistrationRequest request = new RegistrationRequest(
+                "John", "Doe", "abc@test.com", null);
         final MockHttpServletRequestBuilder registerUserRequest = post("/register")
                 .contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request));
@@ -110,7 +119,7 @@ class UserControllerTest {
         final MockHttpServletRequestBuilder loginUserRequest = post("/login")
                 .contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request));
-        when(userService.authenticateUser(ArgumentMatchers.any(AuthenticationRequest.class)))
+        when(authService.authenticateUser(ArgumentMatchers.any(AuthenticationRequest.class)))
                 .thenReturn(response);
 
         mockMvc.perform(loginUserRequest)
@@ -120,7 +129,7 @@ class UserControllerTest {
 
         ArgumentCaptor<AuthenticationRequest> requestCaptor =
                 ArgumentCaptor.forClass(AuthenticationRequest.class);
-        verify(userService, times(1)).authenticateUser(requestCaptor.capture());
+        verify(authService, times(1)).authenticateUser(requestCaptor.capture());
     }
 
     @Test
@@ -143,6 +152,6 @@ class UserControllerTest {
 
         ArgumentCaptor<AuthenticationRequest> requestCaptor =
                 ArgumentCaptor.forClass(AuthenticationRequest.class);
-        verify(userService, never()).authenticateUser(requestCaptor.capture());
+        verify(authService, never()).authenticateUser(requestCaptor.capture());
     }
 }

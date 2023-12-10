@@ -35,8 +35,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
 @Testcontainers
-@ContextConfiguration(initializers = UserControllerIntegrationTest.Initializer.class)
-class UserControllerIntegrationTest {
+@ContextConfiguration(initializers = AuthControllerIntegrationTest.Initializer.class)
+class AuthControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -81,9 +81,9 @@ class UserControllerIntegrationTest {
                 getServletRequest("/register", objectMapper.writeValueAsString(request));
         mockMvc.perform(registerUserRequest)
                 .andExpect(status().isOk());
-        User user = userRepository.findByEmail(request.getEmail()).get();
+        User user = userRepository.findByEmail(request.email()).get();
         assertNotNull(user);
-        assertEquals(request.getEmail(), user.getUsername());
+        assertEquals(request.email(), user.getUsername());
     }
 
     @Test
@@ -92,7 +92,7 @@ class UserControllerIntegrationTest {
         RegistrationRequest request = new RegistrationRequest(
                 "John", "Doe", "abc@test.com", "password"
         );
-        final String failMessage = "User with email " + request.getEmail() + " already exists";
+        final String failMessage = "User with email " + request.email() + " already exists";
         final MockHttpServletRequestBuilder registerUserRequest =
                 getServletRequest("/register", objectMapper.writeValueAsString(request));
         mockMvc.perform(registerUserRequest)
@@ -120,9 +120,9 @@ class UserControllerIntegrationTest {
                 getServletRequest("/login", objectMapper.writeValueAsString(authenticationRequest));
         mockMvc.perform(loginUserRequest)
                 .andExpect(status().isOk());
-        Optional<User> user = userRepository.findByEmail(authenticationRequest.getEmail());
+        Optional<User> user = userRepository.findByEmail(authenticationRequest.email());
         assertTrue(user.isPresent());
-        assertEquals(authenticationRequest.getEmail(), user.get().getUsername());
+        assertEquals(authenticationRequest.email(), user.get().getUsername());
     }
 
     @Test
