@@ -4,15 +4,10 @@
 
 1. Clone:
 ```bash
-git clone https://github.com/nhAnik/spring-poll-app-server.git
-cd spring-poll-app-server
+git clone https://github.com/nhAnik/poll-maker.git
+cd poll-maker
 ```
-2. Install and setup postgres. You can use any other relational database. In that case, change `spring.datasource.url` in `application.yml` file.
-
-3. Create a database.
+2. Run:
 ```bash
-CREATE DATABASE poll;
+./mvnw spring-boot:run
 ```
-4. Change `spring.datasource.username` and `spring.datasource.password` in `application.yml` file.
-
-5. Now, you are all set to run the app.
