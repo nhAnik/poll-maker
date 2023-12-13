@@ -2,6 +2,7 @@ package com.nhanik.poll.controllers;
 
 import com.nhanik.poll.models.Choice;
 import com.nhanik.poll.models.User;
+import com.nhanik.poll.payload.Response;
 import com.nhanik.poll.payload.UpdatedTextRequest;
 import com.nhanik.poll.services.QuestionService;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class ChoiceController {
             @RequestBody UpdatedTextRequest request,
             @AuthenticationPrincipal User user) {
         Choice updatedChoice = questionService.updateChoiceForQuestion(qid, cid, request, user);
-        return ResponseEntity.ok(updatedChoice);
+        return ResponseEntity.ok(Response.withData(updatedChoice));
     }
 
     @DeleteMapping(path = "polls/{qid}/choices/{cid}")
@@ -33,6 +34,6 @@ public class ChoiceController {
             @PathVariable("cid") Long cid,
             @AuthenticationPrincipal User user) {
         questionService.deletePollChoiceForQuestion(qid, cid, user);
-        return ResponseEntity.ok("Choice deleted");
+        return ResponseEntity.ok(Response.withSuccessMsg("Choice deleted"));
     }
 }

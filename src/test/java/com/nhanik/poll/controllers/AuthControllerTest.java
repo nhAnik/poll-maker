@@ -63,7 +63,7 @@ class AuthControllerTest {
                 .content(objectMapper.writeValueAsString(request));
         mockMvc.perform(registerUserRequest)
                 .andExpect(status().isOk())
-                .andExpect(content().string("User created"));
+                .andExpect(jsonPath("$.message", is("User registered")));
         ArgumentCaptor<RegistrationRequest> requestCaptor =
                 ArgumentCaptor.forClass(RegistrationRequest.class);
         verify(authService, times(1)).createNewUser(requestCaptor.capture());
@@ -82,10 +82,10 @@ class AuthControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.message", is("Validation failure")))
-                .andExpect(jsonPath("$.validationErrors", hasSize(2)))
-                .andExpect(jsonPath("$.validationErrors[*].field",
+                .andExpect(jsonPath("$.data", hasSize(2)))
+                .andExpect(jsonPath("$.data[*].field",
                         containsInAnyOrder("email", "password")))
-                .andExpect(jsonPath("$.validationErrors[*].message",
+                .andExpect(jsonPath("$.data[*].message",
                         containsInAnyOrder("must not be blank", "size must be between 8 and 15")));
         ArgumentCaptor<RegistrationRequest> requestCaptor =
                 ArgumentCaptor.forClass(RegistrationRequest.class);
@@ -104,9 +104,9 @@ class AuthControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.message", is("Validation failure")))
-                .andExpect(jsonPath("$.validationErrors", hasSize(1)))
-                .andExpect(jsonPath("$.validationErrors[0].field", is("password")))
-                .andExpect(jsonPath("$.validationErrors[0].message", is("must not be blank")));
+                .andExpect(jsonPath("$.data", hasSize(1)))
+                .andExpect(jsonPath("$.data[0].field", is("password")))
+                .andExpect(jsonPath("$.data[0].message", is("must not be blank")));
     }
 
     @Test
@@ -125,7 +125,7 @@ class AuthControllerTest {
         mockMvc.perform(loginUserRequest)
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
-                .andExpect(jsonPath("$.jwt", is("jwt.jwt.jwt")));
+                .andExpect(jsonPath("$.data.jwt", is("jwt.jwt.jwt")));
 
         ArgumentCaptor<AuthenticationRequest> requestCaptor =
                 ArgumentCaptor.forClass(AuthenticationRequest.class);
@@ -145,9 +145,9 @@ class AuthControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.message", is("Validation failure")))
-                .andExpect(jsonPath("$.validationErrors", hasSize(1)))
-                .andExpect(jsonPath("$.validationErrors[0].field", is("password")))
-                .andExpect(jsonPath("$.validationErrors[0].message",
+                .andExpect(jsonPath("$.data", hasSize(1)))
+                .andExpect(jsonPath("$.data[0].field", is("password")))
+                .andExpect(jsonPath("$.data[0].message",
                         is("size must be between 8 and 15")));
 
         ArgumentCaptor<AuthenticationRequest> requestCaptor =

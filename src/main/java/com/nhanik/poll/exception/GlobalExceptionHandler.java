@@ -11,14 +11,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.nhanik.poll.payload.Response;
+
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({ResourceNotFoundException.class})
-    public ResponseEntity<ExceptionResponse> handleNotFound(Exception ex) {
+    public ResponseEntity<?> handleNotFound(Exception ex) {
         return sendErrorResponse(ex, HttpStatus.NOT_FOUND);
     }
 
@@ -27,26 +28,32 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             ChoiceRemoveFailureException.class,
             MultipleVoteException.class,
             ConstraintViolationException.class,})
-    public ResponseEntity<ExceptionResponse> handleBadRequest(Exception ex) {
+    public ResponseEntity<?> handleBadRequest(Exception ex) {
         return sendErrorResponse(ex, HttpStatus.BAD_REQUEST);
     }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        ValidationExceptionResponse response = new ValidationExceptionResponse(
-                LocalDateTime.now(), status.value(), "Validation failure", new ArrayList<>()
-        );
-        ex.getBindingResult()
+        
+        record ValidationError(String field, String message) {}
+
+        var errors = ex.getBindingResult()
                 .getFieldErrors()
-                .forEach(error -> response.addValidationError(error.getField(), error.getDefaultMessage()));
-        return new ResponseEntity<>(response, headers, status);
+                .stream()
+                .map(error -> new ValidationError(error.getField(), error.getDefaultMessage()))
+                .toList();
+        var response = new Response<>(
+            "error",
+            status.value(),
+            LocalDateTime.now(),
+            "Validation failure",
+            errors
+        );
+        return new ResponseEntity<>(response, status);
     }
 
-    private ResponseEntity<ExceptionResponse> sendErrorResponse(Exception ex, HttpStatus httpStatus) {
-        ExceptionResponse response = new ExceptionResponse(
-                LocalDateTime.now(), httpStatus.value(), ex.getMessage()
-        );
-        return new ResponseEntity<>(response, httpStatus);
+    private ResponseEntity<?> sendErrorResponse(Exception ex, HttpStatus httpStatus) {
+        return new ResponseEntity<>(Response.withErrorMsg(httpStatus, ex.getMessage()), httpStatus);
     }
 }

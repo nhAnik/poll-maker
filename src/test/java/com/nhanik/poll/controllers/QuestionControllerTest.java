@@ -67,11 +67,11 @@ class QuestionControllerTest {
         mockMvc.perform(getQuestion)
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
-                .andExpect(jsonPath("$.questionId", is(1)))
-                .andExpect(jsonPath("$.questionText", is(question.getQuestionText())))
-                .andExpect(jsonPath("$.choices", hasSize(2)))
-                .andExpect(jsonPath("$.choices[*].choiceId", containsInAnyOrder(1, 2)))
-                .andExpect(jsonPath("$.choices[*].choiceText",
+                .andExpect(jsonPath("$.data.questionId", is(1)))
+                .andExpect(jsonPath("$.data.questionText", is(question.getQuestionText())))
+                .andExpect(jsonPath("$.data.choices", hasSize(2)))
+                .andExpect(jsonPath("$.data.choices[*].choiceId", containsInAnyOrder(1, 2)))
+                .andExpect(jsonPath("$.data.choices[*].choiceText",
                         containsInAnyOrder(choice1.getChoiceText(), choice2.getChoiceText())));
     }
 }
