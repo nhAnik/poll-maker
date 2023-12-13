@@ -4,14 +4,10 @@ import com.nhanik.poll.exception.ResourceNotFoundException;
 import com.nhanik.poll.models.Choice;
 import com.nhanik.poll.payload.UpdatedTextRequest;
 import com.nhanik.poll.repositories.ChoiceRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ChoiceService {
-
-    private static final Logger logger = LoggerFactory.getLogger(ChoiceService.class);
 
     private final ChoiceRepository choiceRepository;
 

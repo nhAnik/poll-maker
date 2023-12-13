@@ -1,6 +1,5 @@
 package com.nhanik.poll.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhanik.poll.models.Choice;
 import com.nhanik.poll.models.Question;
 import com.nhanik.poll.models.User;
@@ -31,9 +30,6 @@ class QuestionControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @MockBean
     private QuestionService questionService;
