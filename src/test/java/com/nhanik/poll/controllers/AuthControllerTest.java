@@ -82,11 +82,37 @@ class AuthControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.message", is("Validation failure")))
-                .andExpect(jsonPath("$.data", hasSize(2)))
+                .andExpect(jsonPath("$.data", hasSize(3)))
                 .andExpect(jsonPath("$.data[*].field",
-                        containsInAnyOrder("email", "password")))
+                        containsInAnyOrder("email", "email", "password")))
                 .andExpect(jsonPath("$.data[*].message",
-                        containsInAnyOrder("must not be blank", "size must be between 8 and 15")));
+                        containsInAnyOrder(
+                                "must not be blank",
+                                "size must be between 8 and 15",
+                                "invalid email format"
+                        )
+                ));
+        ArgumentCaptor<RegistrationRequest> requestCaptor =
+                ArgumentCaptor.forClass(RegistrationRequest.class);
+        verify(authService, never()).createNewUser(requestCaptor.capture());
+    }
+
+    @Test
+    @DisplayName("Failed registration with invalid email")
+    public void whenRegisterWithInvalidEmail_thenReturns400AndErrorResponse() throws Exception {
+        RegistrationRequest request = new RegistrationRequest(
+                "John", "Doe","email", "password"
+        );
+        final MockHttpServletRequestBuilder registerUserRequest = post("/register")
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request));
+        mockMvc.perform(registerUserRequest)
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", is("Validation failure")))
+                .andExpect(jsonPath("$.data", hasSize(1)))
+                .andExpect(jsonPath("$.data[0].message",
+                        is("invalid email format")));
         ArgumentCaptor<RegistrationRequest> requestCaptor =
                 ArgumentCaptor.forClass(RegistrationRequest.class);
         verify(authService, never()).createNewUser(requestCaptor.capture());
@@ -153,5 +179,24 @@ class AuthControllerTest {
         ArgumentCaptor<AuthenticationRequest> requestCaptor =
                 ArgumentCaptor.forClass(AuthenticationRequest.class);
         verify(authService, never()).authenticateUser(requestCaptor.capture());
+    }
+
+    @Test
+    @DisplayName("Failed login with invalid email")
+    public void whenLoginWithInvalidEmail_thenReturns400AndErrorResponse() throws Exception {
+        AuthenticationRequest request = new AuthenticationRequest(
+                "email.com", "password"
+        );
+        final MockHttpServletRequestBuilder loginUserRequest = post("/login")
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request));
+        mockMvc.perform(loginUserRequest)
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", is("Validation failure")))
+                .andExpect(jsonPath("$.data", hasSize(1)))
+                .andExpect(jsonPath("$.data[0].field", is("email")))
+                .andExpect(jsonPath("$.data[0].message",
+                        is("invalid email format")));
     }
 }
