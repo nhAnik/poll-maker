@@ -30,7 +30,7 @@ public class Vote {
             name = "question_id",
             referencedColumnName = "questionId",
             nullable = false,
-            foreignKey = @ForeignKey(name = "FK_QUESTION_ID")
+            foreignKey = @ForeignKey(name = "FK_QUESTION_VOTE_ID")
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Question question;
@@ -40,7 +40,7 @@ public class Vote {
             name = "choice_id",
             referencedColumnName = "choiceId",
             nullable = false,
-            foreignKey = @ForeignKey(name = "FK_CHOICE_ID")
+            foreignKey = @ForeignKey(name = "FK_CHOICE_VOTE_ID")
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Choice choice;
@@ -50,7 +50,7 @@ public class Vote {
             name = "user_id",
             referencedColumnName = "userId",
             nullable = false,
-            foreignKey = @ForeignKey(name = "FK_USER_ID")
+            foreignKey = @ForeignKey(name = "FK_USER_VOTE_ID")
     )
     private User user;
 

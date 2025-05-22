@@ -39,7 +39,7 @@ public class Question {
             name = "user_id",
             referencedColumnName = "userId",
             nullable = false,
-            foreignKey = @ForeignKey(name = "FK_USER_ID")
+            foreignKey = @ForeignKey(name = "FK_USER_QUESTION_ID")
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore

@@ -32,7 +32,7 @@ public class Choice {
             name = "question_id",
             referencedColumnName = "questionId",
             nullable = false,
-            foreignKey = @ForeignKey(name = "FK_QUESTION_ID")
+            foreignKey = @ForeignKey(name = "FK_QUESTION_CHOICE_ID")
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
