@@ -2,10 +2,7 @@ package com.nhanik.poll.controllers;
 
 import com.nhanik.poll.models.Question;
 import com.nhanik.poll.models.User;
-import com.nhanik.poll.payload.QuestionRequest;
-import com.nhanik.poll.payload.Response;
-import com.nhanik.poll.payload.UpdatedTextRequest;
-import com.nhanik.poll.payload.VoteRequest;
+import com.nhanik.poll.payload.*;
 import com.nhanik.poll.services.QuestionService;
 import jakarta.validation.Valid;
 
@@ -61,6 +58,12 @@ public class QuestionController {
     public ResponseEntity<?>  getPollQuestion(@PathVariable("qid") Long id) {
         Question question = questionService.getPollQuestion(id);
         return ResponseEntity.ok(Response.withData(question));
+    }
+
+    @GetMapping(path = "polls/{qid}/result")
+    public ResponseEntity<?>  getPollResult(@PathVariable("qid") Long id) {
+        PollResultResponse result = questionService.getPollResult(id);
+        return ResponseEntity.ok(Response.withData(result));
     }
 
     @PutMapping(path = "polls/{qid}")

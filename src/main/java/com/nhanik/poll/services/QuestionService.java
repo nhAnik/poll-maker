@@ -7,9 +7,7 @@ import com.nhanik.poll.models.Choice;
 import com.nhanik.poll.models.Question;
 import com.nhanik.poll.models.User;
 import com.nhanik.poll.models.Vote;
-import com.nhanik.poll.payload.QuestionRequest;
-import com.nhanik.poll.payload.UpdatedTextRequest;
-import com.nhanik.poll.payload.VoteRequest;
+import com.nhanik.poll.payload.*;
 import com.nhanik.poll.repositories.QuestionRepository;
 import com.nhanik.poll.repositories.VoteRepository;
 import org.slf4j.Logger;
@@ -81,6 +79,21 @@ public class QuestionService {
     public Question getPollQuestion(Long id) {
         return questionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Question", id));
+    }
+
+    public PollResultResponse getPollResult(Long id) {
+        Question question = getPollQuestion(id);
+        List<ChoiceResult> choiceResults = voteRepository
+                .countVotesByChoiceForQuestion(question.getQuestionId());
+        long voteCount = choiceResults.stream()
+                .map(ChoiceResult::getVoteCount)
+                .reduce(0L, Long::sum);
+        return new PollResultResponse(
+                question.getQuestionId(),
+                question.getQuestionText(),
+                choiceResults,
+                voteCount
+        );
     }
 
     @Transactional

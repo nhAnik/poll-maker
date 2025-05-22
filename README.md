@@ -36,6 +36,7 @@ A RESTful API-based polling application built with Spring Boot and PostgreSQL. U
 - `GET /polls/{qid}` — Get specific poll by ID
 - `PUT /polls/{qid}` — Update poll question text
 - `DELETE /polls/{qid}` — Delete poll question
+- `GET polls/{qid}/result` - Get result of a poll
 
 ### Choices
 - `POST /polls/{qid}/choices` — Add a new choice to a poll
