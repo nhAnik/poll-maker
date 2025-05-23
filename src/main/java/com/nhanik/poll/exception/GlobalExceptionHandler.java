@@ -27,7 +27,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             RegistrationFailureException.class,
             ChoiceRemoveFailureException.class,
             MultipleVoteException.class,
-            ConstraintViolationException.class,})
+            ConstraintViolationException.class,
+            ExpiredPollException.class
+    })
     public ResponseEntity<?> handleBadRequest(Exception ex) {
         return sendErrorResponse(ex, HttpStatus.BAD_REQUEST);
     }

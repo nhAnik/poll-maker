@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,9 @@ public class Question {
 
     @Column(nullable = false)
     private String questionText;
+
+    @Column(nullable = false)
+    private LocalDateTime expiresAt;
 
     @OneToMany(
             mappedBy = "question"
@@ -50,15 +54,17 @@ public class Question {
 
     public Question() {}
 
-    public Question(String questionText, User user) {
+    public Question(String questionText, LocalDateTime expiresAt, User user) {
         this.questionText = questionText;
+        this.expiresAt = expiresAt;
         this.user = user;
         this.choices = new ArrayList<>();
     }
 
-    public Question(Long questionId, String questionText, List<Choice> choices, User user) {
+    public Question(Long questionId, String questionText, LocalDateTime expiresAt, List<Choice> choices, User user) {
         this.questionId = questionId;
         this.questionText = questionText;
+        this.expiresAt = expiresAt;
         this.choices = choices;
         this.user = user;
     }
@@ -85,6 +91,14 @@ public class Question {
 
     public void setQuestionText(String questionText) {
         this.questionText = questionText;
+    }
+
+    public LocalDateTime getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void setExpiresAt(LocalDateTime expiresAt) {
+        this.expiresAt = expiresAt;
     }
 
     public List<Choice> getChoices() {

@@ -16,6 +16,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +52,8 @@ class QuestionControllerTest {
                 1L, "John", "Doe", "abc@test.com", "password");
         List<Choice> choices = new ArrayList<>();
 
-        Question question = new Question(1L, "Favourite JS framework?", choices, user);
+        LocalDateTime expiresAt = LocalDateTime.now().plusHours(12);
+        Question question = new Question(1L, "Favourite JS framework?", expiresAt, choices, user);
         Choice choice1 = new Choice(1L, "React", 0, question);
         Choice choice2 = new Choice(2L, "Vue", 0, question);
         question.addChoice(choice1);

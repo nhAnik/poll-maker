@@ -1,6 +1,7 @@
 package com.nhanik.poll.services;
 
 import com.nhanik.poll.exception.ChoiceRemoveFailureException;
+import com.nhanik.poll.exception.ExpiredPollException;
 import com.nhanik.poll.exception.MultipleVoteException;
 import com.nhanik.poll.exception.ResourceNotFoundException;
 import com.nhanik.poll.models.Choice;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -39,9 +41,19 @@ public class QuestionService {
         }
     }
 
+    private void checkExpiry(Question question) {
+        if (question.getExpiresAt().isBefore(LocalDateTime.now())) {
+            logger.error("Poll with id {} has been expired", question.getQuestionId());
+            throw new ExpiredPollException(question.getQuestionId());
+        }
+    }
+
     @Transactional
     public Question createPollQuestionWithChoices(QuestionRequest request, User user) {
-        Question question = questionRepository.save(new Question(request.questionText(), user));
+        if (request.expiresAt().isBefore(LocalDateTime.now())) {
+            throw new ExpiredPollException("Poll cannot be created with old date time.");
+        }
+        Question question = questionRepository.save(new Question(request.questionText(), request.expiresAt(), user));
         request.choices()
                 .forEach(choiceText -> {
                     Choice choice = choiceService.createPollChoice(new Choice(choiceText, question));
@@ -53,6 +65,7 @@ public class QuestionService {
     public Question addChoiceForQuestion(Long qid, UpdatedTextRequest request, User user) {
         Question question = getPollQuestion(qid);
         checkUserPermission(question, user.getUserId());
+        checkExpiry(question);
         choiceService.createPollChoice(new Choice(request.updatedText(), question));
         return question;
     }
@@ -61,6 +74,7 @@ public class QuestionService {
     public void castVoteToPoll(Long qid, VoteRequest request, User user) {
         Long choiceId = request.choiceId();
         Question question = getPollQuestion(qid);
+        checkExpiry(question);
         Choice choice = choiceService.getPollChoice(choiceId);
         voteRepository
                 .findByQuestionAndUser(question, user)
@@ -100,6 +114,7 @@ public class QuestionService {
     public Question updatePollQuestion(Long qid, UpdatedTextRequest request, User user) {
         Question question = getPollQuestion(qid);
         checkUserPermission(question, user.getUserId());
+        checkExpiry(question);
         question.setQuestionText(request.updatedText());
         return question;
     }
@@ -114,6 +129,7 @@ public class QuestionService {
     public Choice updateChoiceForQuestion(Long qid, Long cid, UpdatedTextRequest request, User user) {
         Question question = getPollQuestion(qid);
         checkUserPermission(question, user.getUserId());
+        checkExpiry(question);
         return choiceService.updatePollChoice(cid, request);
     }
 
