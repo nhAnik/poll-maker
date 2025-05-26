@@ -62,8 +62,36 @@ cd poll-maker
 ```bash
 ./mvnw spring-boot:run
 ```
-
 App runs at: `http://localhost:8080`
+
+---
+
+## Package & run
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/nhAnik/poll-maker.git
+cd poll-maker
+```
+
+### 2. Create jar
+
+```bash
+./mvnw clean package
+```
+
+### 3. Start database container
+
+```bash
+docker compose up
+```
+
+### 4. Run
+
+```bash
+java -jar target/*.jar
+```
 
 ---
 

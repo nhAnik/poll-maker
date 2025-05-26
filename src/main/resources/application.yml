@@ -1,4 +1,8 @@
 spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/poll
+    username: postgres
+    password: password
   jpa:
     hibernate:
       ddl-auto: update
