@@ -26,7 +26,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({
             RegistrationFailureException.class,
             ChoiceRemoveFailureException.class,
-            MultipleVoteException.class,
+            InvalidVoteException.class,
             ConstraintViolationException.class,
             ExpiredPollException.class
     })

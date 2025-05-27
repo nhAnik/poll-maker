@@ -2,7 +2,7 @@ package com.nhanik.poll.services;
 
 import com.nhanik.poll.exception.ChoiceRemoveFailureException;
 import com.nhanik.poll.exception.ExpiredPollException;
-import com.nhanik.poll.exception.MultipleVoteException;
+import com.nhanik.poll.exception.InvalidVoteException;
 import com.nhanik.poll.exception.ResourceNotFoundException;
 import com.nhanik.poll.models.Choice;
 import com.nhanik.poll.models.Question;
@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class QuestionService {
@@ -76,10 +77,13 @@ public class QuestionService {
         Question question = getPollQuestion(qid);
         checkExpiry(question);
         Choice choice = choiceService.getPollChoice(choiceId);
+        if (!Objects.equals(choice.getQuestion().getQuestionId(), qid)) {
+            throw new InvalidVoteException("Choice does not belong to the given poll");
+        }
         voteRepository
                 .findByQuestionAndUser(question, user)
                 .ifPresent(vote -> {
-                    throw new MultipleVoteException();
+                    throw new InvalidVoteException("User has already cast a vote in this question");
                 });
 
         voteRepository.save(new Vote(question, choice, user));
