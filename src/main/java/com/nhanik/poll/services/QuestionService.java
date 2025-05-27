@@ -13,6 +13,7 @@ import com.nhanik.poll.repositories.QuestionRepository;
 import com.nhanik.poll.repositories.VoteRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,13 +81,15 @@ public class QuestionService {
         if (!Objects.equals(choice.getQuestion().getQuestionId(), qid)) {
             throw new InvalidVoteException("Choice does not belong to the given poll");
         }
-        voteRepository
-                .findByQuestionAndUser(question, user)
-                .ifPresent(vote -> {
-                    throw new InvalidVoteException("User has already cast a vote in this question");
-                });
+        if (voteRepository.existsByQuestionAndUser(question, user))  {
+            throw new InvalidVoteException("User has already cast a vote in this question");
+        }
 
-        voteRepository.save(new Vote(question, choice, user));
+        try {
+            voteRepository.saveAndFlush(new Vote(question, choice, user));
+        } catch (DataIntegrityViolationException e) {
+            throw new InvalidVoteException("User has already cast a vote in this question");
+        }
         choiceService.incrementPollVoteCount(choiceId);
     }
 

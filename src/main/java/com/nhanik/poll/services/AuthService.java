@@ -8,12 +8,15 @@ import com.nhanik.poll.payload.RegistrationRequest;
 import com.nhanik.poll.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthService {
@@ -34,16 +37,19 @@ public class AuthService {
     public void createNewUser(RegistrationRequest request) {
         String email = request.email();
         String password = request.password();
-        userRepository.findByEmail(email)
-                .ifPresent(user -> {
-                    throw new RegistrationFailureException(email);
-                });
-        User user = new User();
-        user.setFirstName(request.firstName());
-        user.setLastName(request.lastName());
-        user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(password));
-        userRepository.save(user);
+        if (userRepository.existsByEmail(email)) {
+            throw new RegistrationFailureException(email);
+        }
+        try {
+            User user = new User();
+            user.setFirstName(request.firstName());
+            user.setLastName(request.lastName());
+            user.setEmail(email);
+            user.setPassword(passwordEncoder.encode(password));
+            userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new RegistrationFailureException(email);
+        }
     }
 
     public AuthenticationResponse authenticateUser(AuthenticationRequest request) {
